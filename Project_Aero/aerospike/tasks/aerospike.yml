@@ -1,0 +1,46 @@
+- name: Tiny Proxy https
+  shell: export https_proxy="http://tinyproxy:8888"
+- name: Tiny Proxy http
+  shell: export http_proxy="http://tinyproxy:8888"
+- name: Creating directory in /var/lib
+  file:
+   path: /var/lib/aerospike
+   state: directory
+   mode: "u=rw,g=wx,o=rwx"
+- name: Creating SSL directory
+  file:
+   path: /etc/aerospike/ssl
+   state: directory
+   mode: "u=rw,g=wx,o=rwx"
+- name: Sending SSL file to the remote 
+  copy:
+   src: /ssl.zip
+   dest: /etc/aerospike/ssl.zip
+- name: Unzip SSL file
+  command: chdir=/etc/aerospike  unzip -P {{password}} ssl.zip
+- name: Sending Installation to files to remote hosts
+  copy:
+   src: /aerospike-E4.8.0.6.tgz
+   dest: /
+- name: Apt Update
+  shell: apt-get update
+- name: Unizp Tar File
+  ansible.builtin.unarchive:
+   src: /aerospike-E4.8.0.6.tgz
+   dest: /
+   remote_src: yes
+- name: Aerospike Installation
+  command: chdir=/aerospike-server-enterprise-4.8.0.6-ubuntu16.04 ./asinstall
+- name: Sending Aerospike amc.deb file
+  copy:
+   src: /aerospike-amc-e4.0.24.deb
+   dest: /
+- name: Amc debian pacakge management
+  command: chdir=/  dpkg -i aerospike-amc-e4.0.24.deb
+- name: Cluster Setup
+  template:
+    src: aerospike.conf.j2
+    dest: /etc/aerospike/aerospike.conf
+    owner: root
+    group: root
+    mode: 0400

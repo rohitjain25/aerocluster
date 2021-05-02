@@ -1,0 +1,6 @@
+---
+- name: Aerospike Setup
+  hosts: webservers
+  user: root
+  roles:
+  - aerospike

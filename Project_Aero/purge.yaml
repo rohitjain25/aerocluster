@@ -1,0 +1,10 @@
+---
+- name: Aerospike Setup
+  hosts: webservers
+  tasks:
+     - name: Aerospike Tools
+       shell: sudo dpkg --purge aerospike-tools
+     - name: Aerospike Server Enterprise
+       shell: sudo dpkg --purge aerospike-server-enterprise
+     - name: Aerospike Amc  Enterprise
+       shell: sudo dpkg --purge aerospike-amc-enterprise
